@@ -6,83 +6,53 @@ window.renderStatistics = function (ctx, names, times) {
     startY: 10,
     widthRect: 420,
     heightRect: 270,
-    lenghtShadow: 10,
-    margin: 40,
-
-    colorRect: ['rgba(0, 0, 0, 0.7)', 'rgb(256, 256, 256)'],
-    text: ['Ура вы победили!', 'Список результатов: ']
+    margin: 10
   };
 
-  drawRect(dataCloud.startX + dataCloud.lenghtShadow, dataCloud.startY + dataCloud.lenghtShadow, dataCloud.widthRect, dataCloud.heightRect, dataCloud.colorRect[0]);
-  drawRect(dataCloud.startX, dataCloud.startY, dataCloud.widthRect, dataCloud.heightRect, dataCloud.colorRect[1]);
-  writeText(dataCloud.text);
-  drawHistogram(times, names);
-
-  // Рисуем прямоугольник
-  function drawRect(axisX, axisY, width, height, fillColor) {
-    ctx.fillStyle = fillColor;
-    ctx.fillRect(axisX, axisY, width, height);
+  var drawCloud = function (x, y, w, h, r1, r2, r3, colr, m) {
+    ctx.fillStyle = colr;
+    ctx.beginPath();
+    ctx.moveTo(x + m, y + 10 + m);
+    ctx.arcTo(x + m, y + m, x + 10 + m, y + m, r1);
+    ctx.arcTo(x + w / 2 + m, y + 30 + m, x + w - 10 + m, y + m, r3);
+    ctx.arcTo(x + w + m, y + m, x + w + m, y + 10 + m, r1);
+    ctx.arcTo(x + w - 30 + m, y + h / 2 + m, x + w + m, y + h - 10 + m, r2);
+    ctx.arcTo(x + w + m, y + h + m, x + w - 10 + m, y + h + m, r1);
+    ctx.arcTo(x + w / 2 + m, y + h - 30 + m, x + 10 + m, y + h + m, r3);
+    ctx.arcTo(x + m, y + h + m, x + m, y + h - 10 + m, r1);
+    ctx.arcTo(x + 30 + m, y + h / 2 + m, x + m, y + 10 + m, r2);
+    ctx.fill();
   }
 
-  // Выводим надпись на облаке
-  function writeText(textArray) {
-    ctx.fillStyle = '#000';
-    ctx.font = '16px PT Mono';
+  drawCloud(dataCloud.startX, dataCloud.startY, dataCloud.widthRect, dataCloud.heightRect, 10, 250, 400, 'rgba(0,0,0,0.5)', dataCloud.margin);
+  drawCloud(dataCloud.startX, dataCloud.startY, dataCloud.widthRect, dataCloud.heightRect, 10, 250, 400, '#fff', 0);
 
-    for (var i = 0; i < textArray.length; i++) {
-      ctx.fillText(textArray[i], dataCloud.startX + dataCloud.margin, dataCloud.startY + (i + 1) * 25);
-    }
-  }
+  ctx.fillStyle = '#000';
+  ctx.font = '16px PT Mono';
+  ctx.textBaseline = 'hanging';
+  ctx.fillText('Ура, вы победили!', 240, 45);
+  ctx.fillText('Список результатов:', 230, 65);
 
-  // Рисуем гистограмму
-  function drawHistogram(arrayTimes, arrayNames) {
+  var maxVal = Math.max.apply(null, times);
 
-    var dataHistogram = {
-      barWidth: 40,
-      indent: 90,
-      indentName: 20,
-      indentTime: 10,
-      histogramHeight: 150,
-      paddingTop: 60,
-    };
+  for (var i = 0; i < names.length; i++) {
 
-    var step = dataHistogram.histogramHeight / (getMaxValue(times) - 0);
-    var initialX = dataCloud.startX + dataCloud.margin;
-    var initialY = dataCloud.startY + dataHistogram.histogramHeight + dataHistogram.indentName + dataHistogram.indentTime + dataHistogram.paddingTop;
+    var val = Math.floor(120 * times[i] / maxVal);
+    var style;
 
-    for (var i = 0; i < arrayTimes.length; i++) {
-      dataHistogram.barHeight = arrayTimes[i] * step;
-      var getY = initialY - arrayTimes[i] * step;
-      var getX = initialX + dataHistogram.indent * i;
-
-      ctx.fillStyle = fillBarColor(names[i]);
-      ctx.fillRect(getX, getY, dataHistogram.barWidth, dataHistogram.barHeight);
-
-      ctx.fillText(arrayNames[i], getX, initialY + dataHistogram.indentName);
-      ctx.fillText(arrayTimes[i].toFixed(0), getX, getY - dataHistogram.indentTime);
-    }
-  }
-
-  // Вспомогательные функции
-  // Ищем наихудший результат
-  function getMaxValue(array) {
-    var max = -1;
-    for (var i = 0; i < array.length; i++) {
-      var value = array[i];
-      if (value > max) {
-        max = value;
-      }
-    }
-    return max;
-  }
-
-  // Вычисляем цвет бара в зависимости от имени игрока
-  function fillBarColor(namePlayer) {
-    var randomOpacity = Math.random().toFixed(2);
-    if (namePlayer === 'Вы') {
-      ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+    if (names[i] == 'Вы') {
+      style = 'rgba(255,0,0,1)';
     } else {
-      ctx.fillStyle = 'rgba(0, 0, 255, ' + randomOpacity + ')';
+      var alf = Math.random() / 1.5;
+      style = `rgba(0, 0, 255, ${0.2 + alf})`;
     }
+
+    ctx.fillStyle = style;
+    ctx.fillRect(155 + i * 90, 103 + 120 - val, 40, val)
+
+    ctx.fillStyle = '#000';
+    ctx.fillText(Math.floor(times[i]), 155 + i * 90, 85 + 120 - val);
+    ctx.fillText(names[i], 155 + i * 90, 230);
   }
-};
+}
+
