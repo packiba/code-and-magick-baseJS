@@ -8,20 +8,25 @@
   // кнопка закрытия окна настройки персонажа
   var setupClose = window.setup.querySelector('.setup-close');
 
+  var KeyCode = {
+    'ENTER': 13,
+    'ESC': 27
+  };
+
   var onPopupEscPress = function (evt) {
-    if (evt.keyCode === 27) {
+    if (evt.keyCode === KeyCode.ESC) {
       closePopup();
     };
   }
 
   var onSetupOpenEnterPress = function (evt) {
-    if (evt.keyCode === 13) {
+    if (evt.keyCode === KeyCode.ENTER) {
       openPopup();
     }
   }
 
   var onSetupCloseEnterPress = function (evt) {
-    if (evt.keyCode === 13) {
+    if (evt.keyCode === KeyCode.ENTER) {
       closePopup();
       evt.stopPropagation();
     }

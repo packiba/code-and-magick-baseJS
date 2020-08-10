@@ -6,15 +6,55 @@
     var fireball = setup.querySelector('.setup-fireball-wrap');
     var nameInput = setup.querySelector('.setup-user-name');
 
+    var COAT_COLORS = [
+        'rgb(101, 137, 164)',
+        'rgb(241, 43, 107)',
+        'rgb(146, 100, 161)',
+        'rgb(56, 159, 117)',
+        'rgb(215, 210, 55)',
+        'rgb(0, 0, 0)'
+    ]
+    var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
+    var FIREBALL_COLORS = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
+
+    var curEyesColor = 'black';
+    var curCoatColor = 'rgb(101, 137, 164)';
+    var curFireballColor = '#ee4830';
+
+    // функция выбора случайного элемента из массива
+    var randomElement = function (arr) {
+        return arr[Math.floor(Math.random() * arr.length)]
+    }
+
+    var add_rating = function () {
+        var newArr = wizards;
+        newArr.forEach(function (item) {
+            var rating = 4 * (item.colorCoat === curCoatColor) + 2 * (item.colorEyes === curEyesColor) + 1 * (item.colorFireball === curFireballColor);
+            item.rating = rating;
+        });
+        return newArr.sort(function (left, right) {
+            return right.rating - left.rating;
+        });
+    }
+
+    var update = function () {
+        updateWizards(add_rating());
+    };
 
     var onCoatClick = function () {
-        coat.style.fill = randomElement(COAT_COLORS);
+        curCoatColor = randomElement(COAT_COLORS);
+        coat.style.fill = curCoatColor;
+        debounce(update);
     };
     var onEyesClick = function () {
-        eyes.style.fill = randomElement(EYES_COLORS);
+        curEyesColor = randomElement(EYES_COLORS);
+        eyes.style.fill = curEyesColor;
+        debounce(update);
     };
     var onFireballClick = function () {
-        fireball.style.background = randomElement(FIREBALL_COLORS);
+        curFireballColor = randomElement(FIREBALL_COLORS);
+        fireball.style.background = curFireballColor;
+        debounce(update);
     };
 
     coat.addEventListener('click', onCoatClick);
